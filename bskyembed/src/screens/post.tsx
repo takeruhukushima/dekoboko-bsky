@@ -3,7 +3,7 @@ import '../index.css'
 import {AppBskyFeedDefs, AtpAgent} from '@atproto/api'
 import {h, render} from 'preact'
 
-import logo from '../../assets/logo.svg'
+import logo from '../../assets/dekoboko.png'
 import {applyTheme, initSystemColorMode} from '../color-mode'
 import {Container} from '../components/container'
 import {Link} from '../components/link'

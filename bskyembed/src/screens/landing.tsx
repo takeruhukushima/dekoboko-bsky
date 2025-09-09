@@ -5,7 +5,7 @@ import {h, render} from 'preact'
 import {useEffect, useMemo, useRef, useState} from 'preact/hooks'
 
 import arrowBottom from '../../assets/arrowBottom_stroke2_corner0_rounded.svg'
-import logo from '../../assets/logo.svg'
+import logo from '../../assets/dekoboko.png'
 import {
   assertColorModeValues,
   ColorModeValues,

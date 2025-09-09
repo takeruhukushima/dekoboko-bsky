@@ -40,7 +40,7 @@ module.exports = function (_config) {
       runtimeVersion: {
         policy: 'appVersion',
       },
-      icon: './assets/app-icons/ios_icon_default_light.png',
+      icon: './bskyembed/assets/dekoboko.png',
       userInterfaceStyle: 'automatic',
       primaryColor: '#1083fe',
       ios: {
@@ -141,12 +141,12 @@ module.exports = function (_config) {
         barStyle: 'light-content',
       },
       android: {
-        icon: './assets/app-icons/android_icon_default_light.png',
+        icon: './bskyembed/assets/dekoboko.png',
         adaptiveIcon: {
-          foregroundImage: './assets/icon-android-foreground.png',
-          monochromeImage: './assets/icon-android-foreground.png',
+          foregroundImage: './bskyembed/assets/dekoboko.png',
+          monochromeImage: './bskyembed/assets/dekoboko.png',
           backgroundImage: './assets/icon-android-background.png',
-          backgroundColor: '#1185FE',
+          backgroundColor: '#FFFFFF',
         },
         googleServicesFile: './google-services.json',
         package: 'xyz.blueskyweb.app',
@@ -169,7 +169,7 @@ module.exports = function (_config) {
         ],
       },
       web: {
-        favicon: './assets/favicon.png',
+        favicon: './bskyembed/assets/dekoboko.png',
       },
       updates: {
         url: 'https://updates.bsky.app/manifest',

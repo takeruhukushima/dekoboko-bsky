@@ -7,8 +7,8 @@ import {
 import {h} from 'preact'
 
 import replyIcon from '../../assets/bubble_filled_stroke2_corner2_rounded.svg'
+import logo from '../../assets/dekoboko.png'
 import likeIcon from '../../assets/heart2_filled_stroke2_corner0_rounded.svg'
-import logo from '../../assets/logo.svg'
 import repostIcon from '../../assets/repost_stroke2_corner2_rounded.svg'
 import {CONTENT_LABELS} from '../labels'
 import * as bsky from '../types/bsky'
