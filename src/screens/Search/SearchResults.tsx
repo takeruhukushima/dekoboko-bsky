@@ -63,16 +63,38 @@ let SearchResults = ({
           />
         ),
       },
+      {
+        title: _(msg`Requests`),
+        component: (
+          <SearchScreenPostResults
+            // Prefilter to request posts by appending the tag
+            query={`${queryWithParams} #dekobokoRequest`}
+            sort="top"
+            active={activeTab === 2}
+          />
+        ),
+      },
+      {
+        title: _(msg`Helps`),
+        component: (
+          <SearchScreenPostResults
+            // Prefilter to help posts by appending the tag
+            query={`${queryWithParams} #dekobokoHelp`}
+            sort="top"
+            active={activeTab === 3}
+          />
+        ),
+      },
       noParams && {
         title: _(msg`People`),
         component: (
-          <SearchScreenUserResults query={query} active={activeTab === 2} />
+          <SearchScreenUserResults query={query} active={activeTab === 4} />
         ),
       },
       noParams && {
         title: _(msg`Feeds`),
         component: (
-          <SearchScreenFeedsResults query={query} active={activeTab === 3} />
+          <SearchScreenFeedsResults query={query} active={activeTab === 5} />
         ),
       },
     ].filter(Boolean) as {

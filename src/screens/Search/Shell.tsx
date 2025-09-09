@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react'
 import {
+  ActivityIndicator,
   type StyleProp,
   type TextInput,
   View,
@@ -29,8 +30,13 @@ import {
   unstableCacheProfileView,
   useProfilesQuery,
 } from '#/state/queries/profile'
+import {useSearchPostsQuery} from '#/state/queries/search-posts'
 import {useSession} from '#/state/session'
 import {useSetMinimalShellMode} from '#/state/shell'
+import {Pager} from '#/view/com/pager/Pager'
+import {TabBar} from '#/view/com/pager/TabBar'
+import {Post} from '#/view/com/post/Post'
+import {List} from '#/view/com/util/List'
 import {
   makeSearchQuery,
   type Params,
@@ -447,7 +453,31 @@ let SearchScreenInner = ({
       onPageSelected={onPageSelected}
     />
   ) : hasSession ? (
-    <Explore focusSearchInput={focusSearchInput} headerHeight={headerHeight} />
+    // When no query, show Explore plus dekoboko-specific tabs
+    <Pager
+      onPageSelected={onPageSelected}
+      renderTabBar={props => (
+        <Layout.Center style={[a.z_10, web([a.sticky, {top: headerHeight}])]}>
+          <TabBar
+            items={[_(msg`Explore`), _(msg`Requests`), _(msg`Helps`)]}
+            {...props}
+          />
+        </Layout.Center>
+      )}
+      initialPage={0}>
+      <View>
+        <Explore
+          focusSearchInput={focusSearchInput}
+          headerHeight={headerHeight}
+        />
+      </View>
+      <View>
+        <LocalPostResults query={'#dekobokoRequest'} active={activeTab === 1} />
+      </View>
+      <View>
+        <LocalPostResults query={'#dekobokoHelp'} active={activeTab === 2} />
+      </View>
+    </Pager>
   ) : (
     <Layout.Center>
       <View style={a.flex_1}>
@@ -535,3 +565,85 @@ function scrollToTopWeb() {
     window.scrollTo(0, 0)
   }
 }
+
+// Minimal local results list for Explore-time tabs (Requests/Helps)
+let LocalPostResults = ({
+  query,
+  active,
+}: {
+  query: string
+  active: boolean
+}): React.ReactNode => {
+  const t = useTheme()
+  const {_} = useLingui()
+  const {hasSession} = useSession()
+
+  const {
+    isFetched,
+    data: results,
+    isFetching,
+    error,
+    refetch,
+    fetchNextPage,
+    hasNextPage,
+  } = useSearchPostsQuery({query, sort: 'top', enabled: active && hasSession})
+
+  const [isPTR, setIsPTR] = useState(false)
+  const onPullToRefresh = useCallback(async () => {
+    setIsPTR(true)
+    await refetch()
+    setIsPTR(false)
+  }, [refetch])
+  const onEndReached = useCallback(() => {
+    if (isFetching || !hasNextPage || error) return
+    fetchNextPage()
+  }, [isFetching, hasNextPage, error, fetchNextPage])
+
+  const posts = useMemo(() => {
+    return results?.pages.flatMap(page => page.posts) || []
+  }, [results])
+
+  if (error) {
+    return (
+      <Layout.Content>
+        <View style={[a.p_xl]}>
+          <Text style={[t.atoms.text_contrast_medium]}>
+            <Trans>Error: {error.toString()}</Trans>
+          </Text>
+        </View>
+      </Layout.Content>
+    )
+  }
+
+  return isFetched ? (
+    posts.length ? (
+      <List
+        data={posts}
+        renderItem={({item}) => <Post post={item} />}
+        keyExtractor={item => item.uri}
+        refreshing={isPTR}
+        onRefresh={onPullToRefresh}
+        onEndReached={onEndReached}
+        desktopFixedHeight
+        contentContainerStyle={{paddingBottom: 100}}
+      />
+    ) : (
+      <Layout.Content>
+        <View style={[a.p_xl]}>
+          <Text style={[t.atoms.text_contrast_medium]}>
+            {query.includes('Request')
+              ? _(msg`No request posts found`)
+              : _(msg`No help posts found`)}
+          </Text>
+        </View>
+      </Layout.Content>
+    )
+  ) : (
+    <Layout.Content>
+      <View style={[a.py_xl]}>
+        <ActivityIndicator />
+      </View>
+    </Layout.Content>
+  )
+}
+LocalPostResults = memo(LocalPostResults)
