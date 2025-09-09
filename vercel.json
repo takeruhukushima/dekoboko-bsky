@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "yarn build-web",
+  "installCommand": "yarn install --frozen-lockfile",
+  "outputDirectory": "web-build"
+}
