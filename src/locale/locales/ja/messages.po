@@ -10913,3 +10913,11 @@ msgstr "「気になること」は興味を引くコンテンツを提供する
 #: src/components/verification/VerificationsDialog.tsx:65
 msgid "Your verifications"
 msgstr "あなたの認証情報"
+
+#: src/screens/Search/SearchResults.tsx:69
+msgid "Requests"
+msgstr "依頼"
+
+#: src/screens/Search/SearchResults.tsx:80
+msgid "Helps"
+msgstr "ヘルプ"
