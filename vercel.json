@@ -2,5 +2,11 @@
   "version": 2,
   "buildCommand": "yarn intl:compile && yarn build-web",
   "installCommand": "yarn install --frozen-lockfile",
-  "outputDirectory": "web-build"
+  "outputDirectory": "web-build",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
 }
