@@ -16,6 +16,7 @@ import {
   ScrollView,
   type StyleProp,
   StyleSheet,
+  TextInput as RNTextInput,
   View,
   type ViewStyle,
 } from 'react-native'
@@ -23,9 +24,6 @@ import {
 import ProgressCircle from 'react-native-progress/Circle'
 import Animated, {
   type AnimatedRef,
-  Easing,
-  FadeIn,
-  FadeOut,
   interpolateColor,
   LayoutAnimationConfig,
   LinearTransition,
@@ -35,7 +33,6 @@ import Animated, {
   useAnimatedStyle,
   useDerivedValue,
   useSharedValue,
-  withRepeat,
   withTiming,
   ZoomIn,
   ZoomOut,
@@ -48,15 +45,19 @@ import {
   AppBskyUnspeccedDefs,
   AtUri,
   type BskyAgent,
-  type RichText,
+  RichText,
 } from '@atproto/api'
+import {type IconProp} from '@fortawesome/fontawesome-svg-core'
+import {faCommentDots} from '@fortawesome/free-solid-svg-icons/faCommentDots'
+import {faHandshake} from '@fortawesome/free-solid-svg-icons/faHandshake'
+import {faLifeRing} from '@fortawesome/free-solid-svg-icons/faLifeRing'
 import {FontAwesomeIcon} from '@fortawesome/react-native-fontawesome'
 import {msg, plural, Trans} from '@lingui/macro'
 import {useLingui} from '@lingui/react'
 import {useNavigation} from '@react-navigation/native'
 import {useQueryClient} from '@tanstack/react-query'
 
-import * as apilib from '#/lib/api/index'
+import {post} from '#/lib/api/index'
 import {EmbeddingDisabledError} from '#/lib/api/resolve'
 import {retry} from '#/lib/async/retry'
 import {until} from '#/lib/async/until'
@@ -97,7 +98,7 @@ import {useProfileQuery} from '#/state/queries/profile'
 import {type Gif} from '#/state/queries/tenor'
 import {useAgent, useSession} from '#/state/session'
 import {useComposerControls} from '#/state/shell/composer'
-import {type ComposerOpts, type OnPostSuccessData} from '#/state/shell/composer'
+import {type ComposerOpts} from '#/state/shell/composer'
 import {CharProgress} from '#/view/com/composer/char-progress/CharProgress'
 import {ComposerReplyTo} from '#/view/com/composer/ComposerReplyTo'
 import {
@@ -122,7 +123,7 @@ import {Text} from '#/view/com/util/text/Text'
 import {UserAvatar} from '#/view/com/util/UserAvatar'
 import {atoms as a, native, useTheme, web} from '#/alf'
 import {Button, ButtonIcon, ButtonText} from '#/components/Button'
-import {CircleInfo_Stroke2_Corner0_Rounded as CircleInfoIcon} from '#/components/icons/CircleInfo'
+import {Error as ErrorComponent} from '#/components/Error'
 import {EmojiArc_Stroke2_Corner0_Rounded as EmojiSmileIcon} from '#/components/icons/Emoji'
 import {PlusLarge_Stroke2_Corner0_Rounded as PlusIcon} from '#/components/icons/Plus'
 import {TimesLarge_Stroke2_Corner0_Rounded as XIcon} from '#/components/icons/Times'
@@ -147,15 +148,31 @@ import {
   type PostDraft,
   type ThreadDraft,
 } from './state/composer'
-import {
-  NO_VIDEO,
-  type NoVideoState,
-  processVideo,
-  type VideoState,
-} from './state/video'
+import {processVideo, type VideoState} from './state/video'
 import {type TextInputRef} from './text-input/TextInput.types'
 import {getVideoMetadata} from './videos/pickVideo'
 import {clearThumbnailCache} from './videos/VideoTranscodeBackdrop'
+
+export const POST_TYPES = [
+  {
+    key: 'normal',
+    label: '通常',
+    color: colors.gray4,
+    icon: faCommentDots as IconProp,
+  },
+  {
+    key: 'request',
+    label: '依頼',
+    color: colors.blue3,
+    icon: faHandshake as IconProp,
+  },
+  {
+    key: 'help',
+    label: 'ヘルプ',
+    color: colors.green4,
+    icon: faLifeRing as IconProp,
+  },
+]
 
 type CancelRef = {
   onPressCancel: () => void
@@ -280,7 +297,7 @@ export const ComposePost = ({
     [composerDispatch],
   )
 
-  const [publishOnUpload, setPublishOnUpload] = useState(false)
+  const [publishOnUpload, _setPublishOnUpload] = useState(false)
 
   const onClose = useCallback(() => {
     closeComposer()
@@ -381,51 +398,227 @@ export const ComposePost = ({
         ),
     )
 
-  const onPressPublish = React.useCallback(async () => {
-    if (isPublishing) {
-      return
-    }
+  // 投稿タイプ・スキルタグ state
+  const [postType, setPostType] = useState<'normal' | 'request' | 'help'>(
+    'normal',
+  )
+  const [requiredSkills, setRequiredSkills] = useState<string[]>([])
+  const [userSkills, setUserSkills] = useState<string[]>([])
+  const [skillInput, setSkillInput] = useState('')
 
-    if (!canPost) {
-      return
-    }
+  // サジェスト用ダミー（本来はAPIやプロフィールから取得）
+  const skillSuggestions = [
+    '#Python',
+    '#英語',
+    '#JavaScript',
+    '#中国語',
+    '#React',
+    '#TypeScript',
+  ]
 
-    if (
-      thread.posts.some(
-        post =>
-          post.embed.media?.type === 'video' &&
-          post.embed.media.video.asset &&
-          post.embed.media.video.status !== 'done',
-      )
-    ) {
-      setPublishOnUpload(true)
-      return
-    }
+  // 投稿タイプ選択UI
+  const renderPostTypeSelector = () => (
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginVertical: 12,
+      }}>
+      {POST_TYPES.map(type => (
+        <Button
+          key={type.key}
+          label={type.label}
+          onPress={() => setPostType(type.key as 'normal' | 'request' | 'help')}
+          style={{
+            backgroundColor: postType === type.key ? type.color : colors.white,
+            borderColor: type.color,
+            borderWidth: 1,
+            marginHorizontal: 6,
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingHorizontal: 16,
+            paddingVertical: 8,
+            borderRadius: 20,
+          }}
+          variant={postType === type.key ? 'solid' : 'ghost'}
+          color={postType === type.key ? 'primary' : 'secondary'}>
+          <FontAwesomeIcon
+            icon={type.icon}
+            size={16}
+            style={{
+              marginRight: 8,
+              color: postType === type.key ? colors.white : type.color,
+            }}
+          />
+          <ButtonText
+            style={{color: postType === type.key ? colors.white : type.color}}>
+            {type.label}
+          </ButtonText>
+        </Button>
+      ))}
+    </View>
+  )
 
+  // スキルタグ入力UI
+  const renderSkillTagInput = () => (
+    <View style={{marginBottom: 8}}>
+      <NewText style={{marginBottom: 4}}>
+        {postType === 'request'
+          ? '必要スキル'
+          : postType === 'help'
+            ? '所持スキル'
+            : 'スキルタグ'}
+      </NewText>
+      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+        <RNTextInput
+          value={skillInput}
+          onChangeText={setSkillInput}
+          placeholder="#タグを入力"
+          style={{
+            flex: 1,
+            borderWidth: 1,
+            borderColor: colors.gray3,
+            borderRadius: 12,
+            padding: 8,
+            backgroundColor: colors.white, // 背景色を白
+            color: 'black', // 文字色を黒
+          }}
+          placeholderTextColor={colors.gray3}
+        />
+        <Button
+          label="追加"
+          onPress={() => {
+            if (skillInput.trim() && skillInput.startsWith('#')) {
+              if (postType === 'request')
+                setRequiredSkills([...requiredSkills, skillInput.trim()])
+              else if (postType === 'help')
+                setUserSkills([...userSkills, skillInput.trim()])
+              setSkillInput('')
+            }
+          }}
+          style={{marginLeft: 8}}
+          variant="ghost"
+          color="primary">
+          <ButtonText>追加</ButtonText>
+        </Button>
+      </View>
+      {/* サジェスト表示 */}
+      {skillInput.length > 0 && (
+        <View style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 4}}>
+          {skillSuggestions
+            .filter(s => s.toLowerCase().includes(skillInput.toLowerCase()))
+            .map(s => (
+              <Button
+                key={s}
+                label={s}
+                onPress={() => {
+                  if (postType === 'request')
+                    setRequiredSkills([...requiredSkills, s])
+                  else if (postType === 'help')
+                    setUserSkills([...userSkills, s])
+                  setSkillInput('')
+                }}
+                style={{
+                  margin: 2,
+                  backgroundColor: colors.gray2,
+                  borderRadius: 12,
+                  paddingHorizontal: 8,
+                  paddingVertical: 4,
+                }}
+                variant="ghost"
+                color="secondary">
+                <ButtonText>{s}</ButtonText>
+              </Button>
+            ))}
+        </View>
+      )}
+      {/* 選択済みタグ表示 */}
+      <View style={{flexDirection: 'row', flexWrap: 'wrap', marginTop: 4}}>
+        {(postType === 'request' ? requiredSkills : userSkills).map(
+          (tag, idx) => (
+            <View
+              key={tag + idx}
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                backgroundColor: colors.white,
+                borderRadius: 12,
+                margin: 2,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderWidth: 1,
+                borderColor: colors.gray3,
+              }}>
+              <NewText style={{color: 'black'}}>{tag}</NewText>
+              <Button
+                label="削除"
+                onPress={() => {
+                  if (postType === 'request')
+                    setRequiredSkills(requiredSkills.filter(t => t !== tag))
+                  else if (postType === 'help')
+                    setUserSkills(userSkills.filter(t => t !== tag))
+                }}
+                style={{marginLeft: 4}}
+                variant="ghost"
+                color="secondary">
+                <ButtonText>×</ButtonText>
+              </Button>
+            </View>
+          ),
+        )}
+      </View>
+    </View>
+  )
+
+  // 投稿時、テキストに#dekobokoRequest/#dekobokoHelpを付与
+  const onPressPublishDekoboko = useCallback(async () => {
+    const newPosts = thread.posts.map(post => {
+      let newText = post.richtext.text
+      if (postType === 'request' && !newText.includes('#dekobokoRequest')) {
+        newText = `#dekobokoRequest ${newText}`
+      } else if (postType === 'help' && !newText.includes('#dekobokoHelp')) {
+        newText = `#dekobokoHelp ${newText}`
+      }
+      // スキルタグもテキストに追加
+      let skillTags =
+        postType === 'request'
+          ? requiredSkills
+          : postType === 'help'
+            ? userSkills
+            : []
+      skillTags = skillTags.filter(tag => !newText.includes(tag))
+      if (skillTags.length > 0) {
+        newText = `${newText} ${skillTags.join(' ')}`
+      }
+      // RichText インスタンスを再構築して型を満たす
+      const newRt = new RichText({text: newText})
+      return {
+        ...post,
+        richtext: newRt,
+      }
+    })
+    const newThread = {...thread, posts: newPosts}
+    if (isPublishing || !canPost) return
     setError('')
     setIsPublishing(true)
 
     let postUri: string | undefined
-    let postSuccessData: OnPostSuccessData
+    let postSuccessData: any
     try {
       logger.info(`composer: posting...`)
       postUri = (
-        await apilib.post(agent, queryClient, {
-          thread,
+        await post(agent, queryClient, {
+          thread: newThread,
           replyTo: replyTo?.uri,
           onStateChange: setPublishingStage,
           langs: toPostLanguages(langPrefs.postLanguage),
         })
       ).uris[0]
 
-      /*
-       * Wait for app view to have received the post(s). If this fails, it's
-       * ok, because the post _was_ actually published above.
-       */
+      // 投稿後のapp view待機
       try {
         if (postUri) {
           logger.info(`composer: waiting for app view`)
-
           const posts = await retry(
             5,
             _e => true,
@@ -433,10 +626,10 @@ export const ComposePost = ({
               const res = await agent.app.bsky.unspecced.getPostThreadV2({
                 anchor: postUri!,
                 above: false,
-                below: thread.posts.length - 1,
+                below: newThread.posts.length - 1,
                 branchingFactor: 1,
               })
-              if (res.data.thread.length !== thread.posts.length) {
+              if (res.data.thread.length !== newThread.posts.length) {
                 throw new Error(`composer: app view is not ready`)
               }
               if (
@@ -455,23 +648,27 @@ export const ComposePost = ({
             posts,
           }
         }
-      } catch (waitErr: any) {
+      } catch (waitErr) {
         logger.info(`composer: waiting for app view failed`, {
-          safeMessage: waitErr,
+          safeMessage: String(waitErr),
         })
       }
-    } catch (e: any) {
-      logger.error(e, {
+    } catch (e) {
+      logger.error(e as Error, {
         message: `Composer: create post failed`,
-        hasImages: thread.posts.some(p => p.embed.media?.type === 'images'),
+        hasImages: newThread.posts.some(p => p.embed.media?.type === 'images'),
       })
-
-      let err = cleanError(e.message)
+      let err = ''
+      if (typeof e === 'object' && e !== null && 'message' in e) {
+        err = cleanError((e as any).message)
+      } else {
+        err = String(e)
+      }
       if (err.includes('not locate record')) {
         err = _(
           msg`We're sorry! The post you are replying to has been deleted.`,
         )
-      } else if (e instanceof EmbeddingDisabledError) {
+      } else if (typeof e === 'object' && e instanceof EmbeddingDisabledError) {
         err = _(msg`This post's author has disabled quote posts.`)
       }
       setError(err)
@@ -480,14 +677,14 @@ export const ComposePost = ({
     } finally {
       if (postUri) {
         let index = 0
-        for (let post of thread.posts) {
+        for (let post of newThread.posts) {
           logEvent('post:create', {
             imageCount:
               post.embed.media?.type === 'images'
                 ? post.embed.media.images.length
                 : 0,
             isReply: index > 0 || !!replyTo,
-            isPartOfThread: thread.posts.length > 1,
+            isPartOfThread: newThread.posts.length > 1,
             hasLink: !!post.embed.link,
             hasQuote: !!post.embed.quote,
             langs: langPrefs.postLanguage,
@@ -496,9 +693,9 @@ export const ComposePost = ({
           index++
         }
       }
-      if (thread.posts.length > 1) {
+      if (newThread.posts.length > 1) {
         logEvent('thread:create', {
-          postCount: thread.posts.length,
+          postCount: newThread.posts.length,
           isReply: !!replyTo,
         })
       }
@@ -508,7 +705,6 @@ export const ComposePost = ({
     }
     setLangPrefs.savePostLanguageToHistory()
     if (initQuote) {
-      // We want to wait for the quote count to update before we call `onPost`, which will refetch data
       whenAppViewReady(agent, initQuote.uri, res => {
         const quotedThread = res.data.thread
         if (
@@ -530,7 +726,7 @@ export const ComposePost = ({
       <Toast.Outer>
         <Toast.Icon />
         <Toast.Text>
-          {thread.posts.length > 1
+          {newThread.posts.length > 1
             ? _(msg`Your posts were sent`)
             : replyTo
               ? _(msg`Your reply was sent`)
@@ -551,67 +747,32 @@ export const ComposePost = ({
       </Toast.Outer>,
       {type: 'success'},
     )
+    setIsPublishing(false)
   }, [
-    _,
-    agent,
     thread,
-    canPost,
+    postType,
+    requiredSkills,
+    userSkills,
     isPublishing,
+    canPost,
+    agent,
+    queryClient,
+    replyTo,
+    setPublishingStage,
     langPrefs.postLanguage,
-    onClose,
+    setError,
+    setIsPublishing,
+    navigation,
     onPost,
     onPostSuccess,
     initQuote,
-    replyTo,
     setLangPrefs,
-    queryClient,
-    navigation,
+    onClose,
+    _,
   ])
 
-  // Preserves the referential identity passed to each post item.
-  // Avoids re-rendering all posts on each keystroke.
-  const onComposerPostPublish = useNonReactiveCallback(() => {
-    onPressPublish()
-  })
-
-  React.useEffect(() => {
-    if (publishOnUpload) {
-      let erroredVideos = 0
-      let uploadingVideos = 0
-      for (let post of thread.posts) {
-        if (post.embed.media?.type === 'video') {
-          const video = post.embed.media.video
-          if (video.status === 'error') {
-            erroredVideos++
-          } else if (video.status !== 'done') {
-            uploadingVideos++
-          }
-        }
-      }
-      if (erroredVideos > 0) {
-        setPublishOnUpload(false)
-      } else if (uploadingVideos === 0) {
-        setPublishOnUpload(false)
-        onPressPublish()
-      }
-    }
-  }, [thread.posts, onPressPublish, publishOnUpload])
-
-  // TODO: It might make more sense to display this error per-post.
-  // Right now we're just displaying the first one.
-  let erroredVideoPostId: string | undefined
-  let erroredVideo: VideoState | NoVideoState = NO_VIDEO
-  for (let i = 0; i < thread.posts.length; i++) {
-    const post = thread.posts[i]
-    if (
-      post.embed.media?.type === 'video' &&
-      post.embed.media.video.status === 'error'
-    ) {
-      erroredVideoPostId = post.id
-      erroredVideo = post.embed.media.video
-      break
-    }
-  }
+  // 投稿処理コールバック（各Postに渡す）
+  const onComposerPostPublish = onPressPublishDekoboko
 
   const onEmojiButtonPress = useCallback(() => {
     const rect = textInput.current?.getCursorPosition()
@@ -694,6 +855,11 @@ export const ComposePost = ({
           style={[a.flex_1, viewStyles]}
           aria-modal
           accessibilityViewIsModal>
+          {/* 投稿タイプ選択UI */}
+          {renderPostTypeSelector()}
+          {/* スキルタグ入力UI（依頼/ヘルプ時のみ表示） */}
+          {(postType === 'request' || postType === 'help') &&
+            renderSkillTagInput()}
           <ComposerTopBar
             canPost={canPost}
             isReply={!!replyTo}
@@ -703,18 +869,11 @@ export const ComposePost = ({
             publishingStage={publishingStage}
             topBarAnimatedStyle={topBarAnimatedStyle}
             onCancel={onPressCancel}
-            onPublish={onPressPublish}>
+            onPublish={onPressPublishDekoboko}>
             {missingAltError && <AltTextReminder error={missingAltError} />}
-            <ErrorBanner
-              error={error}
-              videoState={erroredVideo}
-              clearError={() => setError('')}
-              clearVideo={
-                erroredVideoPostId
-                  ? () => clearVideo(erroredVideoPostId)
-                  : () => {}
-              }
-            />
+            {error && (
+              <ErrorComponent message={error} onRetry={() => setError('')} />
+            )}
           </ComposerTopBar>
 
           <Animated.ScrollView
@@ -1282,6 +1441,30 @@ function ComposerPills({
   )
 }
 
+function VideoUploadToolbar({state}: {state: VideoState}) {
+  const t = useTheme()
+  const {_} = useLingui()
+  const progress = Math.floor(state.progress * 100)
+
+  return (
+    <View style={[a.flex_row, a.align_center, a.gap_xs]}>
+      <ProgressCircle
+        size={24}
+        showsText
+        progress={state.progress}
+        formatText={() => ''}
+        color={t.atoms.text.color}
+        unfilledColor={t.atoms.bg_contrast_25.backgroundColor}
+        borderColor={t.atoms.bg_contrast_25.backgroundColor}
+        strokeCap="round"
+      />
+      <Text style={[a.text_sm, a.font_bold]}>
+        {progress}% <Trans>Uploading</Trans>
+      </Text>
+    </View>
+  )
+}
+
 function ComposerFooter({
   post,
   dispatch,
@@ -1410,7 +1593,7 @@ function ComposerFooter({
           {video && video.status !== 'done' ? (
             <VideoUploadToolbar state={video} />
           ) : (
-            <ToolbarWrapper style={[a.flex_row, a.align_center, a.gap_xs]}>
+            <View style={[a.flex_row, a.align_center, a.gap_xs]}>
               <SelectMediaButton
                 disabled={isMediaSelectionDisabled}
                 allowedAssetTypes={selectedAssetsType}
@@ -1434,7 +1617,7 @@ function ComposerFooter({
                   <EmojiSmileIcon size="lg" />
                 </Button>
               ) : null}
-            </ToolbarWrapper>
+            </View>
           )}
         </LayoutAnimationConfig>
       </View>
@@ -1707,163 +1890,3 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 })
-
-function ErrorBanner({
-  error: standardError,
-  videoState,
-  clearError,
-  clearVideo,
-}: {
-  error: string
-  videoState: VideoState | NoVideoState
-  clearError: () => void
-  clearVideo: () => void
-}) {
-  const t = useTheme()
-  const {_} = useLingui()
-
-  const videoError =
-    videoState.status === 'error' ? videoState.error : undefined
-  const error = standardError || videoError
-
-  const onClearError = () => {
-    if (standardError) {
-      clearError()
-    } else {
-      clearVideo()
-    }
-  }
-
-  if (!error) return null
-
-  return (
-    <Animated.View
-      style={[a.px_lg, a.pb_sm]}
-      entering={FadeIn}
-      exiting={FadeOut}>
-      <View
-        style={[
-          a.px_md,
-          a.py_sm,
-          a.gap_xs,
-          a.rounded_sm,
-          t.atoms.bg_contrast_25,
-        ]}>
-        <View style={[a.relative, a.flex_row, a.gap_sm, {paddingRight: 48}]}>
-          <CircleInfoIcon fill={t.palette.negative_400} />
-          <NewText style={[a.flex_1, a.leading_snug, {paddingTop: 1}]}>
-            {error}
-          </NewText>
-          <Button
-            label={_(msg`Dismiss error`)}
-            size="tiny"
-            color="secondary"
-            variant="ghost"
-            shape="round"
-            style={[a.absolute, {top: 0, right: 0}]}
-            onPress={onClearError}>
-            <ButtonIcon icon={XIcon} />
-          </Button>
-        </View>
-        {videoError && videoState.jobId && (
-          <NewText
-            style={[
-              {paddingLeft: 28},
-              a.text_xs,
-              a.font_bold,
-              a.leading_snug,
-              t.atoms.text_contrast_low,
-            ]}>
-            <Trans>Job ID: {videoState.jobId}</Trans>
-          </NewText>
-        )}
-      </View>
-    </Animated.View>
-  )
-}
-
-function ToolbarWrapper({
-  style,
-  children,
-}: {
-  style: StyleProp<ViewStyle>
-  children: React.ReactNode
-}) {
-  if (isWeb) return children
-  return (
-    <Animated.View
-      style={style}
-      entering={FadeIn.duration(400)}
-      exiting={FadeOut.duration(400)}>
-      {children}
-    </Animated.View>
-  )
-}
-
-function VideoUploadToolbar({state}: {state: VideoState}) {
-  const t = useTheme()
-  const {_} = useLingui()
-  const progress = state.progress
-  const shouldRotate =
-    state.status === 'processing' && (progress === 0 || progress === 1)
-  let wheelProgress = shouldRotate ? 0.33 : progress
-
-  const rotate = useDerivedValue(() => {
-    if (shouldRotate) {
-      return withRepeat(
-        withTiming(360, {
-          duration: 2500,
-          easing: Easing.out(Easing.cubic),
-        }),
-        -1,
-      )
-    }
-    return 0
-  })
-
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{rotateZ: `${rotate.get()}deg`}],
-    }
-  })
-
-  let text = ''
-
-  switch (state.status) {
-    case 'compressing':
-      text = _(msg`Compressing video...`)
-      break
-    case 'uploading':
-      text = _(msg`Uploading video...`)
-      break
-    case 'processing':
-      text = _(msg`Processing video...`)
-      break
-    case 'error':
-      text = _(msg`Error`)
-      wheelProgress = 100
-      break
-    case 'done':
-      text = _(msg`Video uploaded`)
-      break
-  }
-
-  return (
-    <ToolbarWrapper style={[a.flex_row, a.align_center, {paddingVertical: 5}]}>
-      <Animated.View style={[animatedStyle]}>
-        <ProgressCircle
-          size={30}
-          borderWidth={1}
-          borderColor={t.atoms.border_contrast_low.borderColor}
-          color={
-            state.status === 'error'
-              ? t.palette.negative_500
-              : t.palette.primary_500
-          }
-          progress={wheelProgress}
-        />
-      </Animated.View>
-      <NewText style={[a.font_bold, a.ml_sm]}>{text}</NewText>
-    </ToolbarWrapper>
-  )
-}
