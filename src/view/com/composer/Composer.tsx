@@ -570,25 +570,35 @@ export const ComposePost = ({
     </View>
   )
 
-  // 投稿時、テキストに#dekobokoRequest/#dekobokoHelpを付与
+  // 投稿時、テキスト末尾に #dekobokoRequest/#dekobokoHelp とスキルタグを付与
   const onPressPublishDekoboko = useCallback(async () => {
     const newPosts = thread.posts.map(post => {
       let newText = post.richtext.text
+      // 末尾追加用の配列を作成（重複は除去）
+      const additions: string[] = []
       if (postType === 'request' && !newText.includes('#dekobokoRequest')) {
-        newText = `#dekobokoRequest ${newText}`
+        additions.push('#dekobokoRequest')
       } else if (postType === 'help' && !newText.includes('#dekobokoHelp')) {
-        newText = `#dekobokoHelp ${newText}`
+        additions.push('#dekobokoHelp')
       }
-      // スキルタグもテキストに追加
+      // スキルタグも末尾へ追加
       let skillTags =
         postType === 'request'
           ? requiredSkills
           : postType === 'help'
             ? userSkills
             : []
-      skillTags = skillTags.filter(tag => !newText.includes(tag))
-      if (skillTags.length > 0) {
-        newText = `${newText} ${skillTags.join(' ')}`
+      skillTags
+        .filter(tag => tag && tag.startsWith('#'))
+        .forEach(tag => {
+          if (!newText.includes(tag) && !additions.includes(tag)) {
+            additions.push(tag)
+          }
+        })
+      if (additions.length > 0) {
+        // テキスト末尾にスペース区切りで連結（必要なら前にスペースを入れる）
+        const sep = newText.length > 0 && !/\s$/.test(newText) ? ' ' : ''
+        newText = `${newText}${sep}${additions.join(' ')}`
       }
       // RichText インスタンスを再構築して型を満たす
       const newRt = new RichText({text: newText})
