@@ -2890,7 +2890,7 @@ msgstr ""
 msgid "Double tap to close the dialog"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:1084
+#: src/screens/VideoFeed/index.tsx:1085
 msgid "Double tap to like"
 msgstr ""
 
@@ -3338,7 +3338,7 @@ msgstr ""
 msgid "Expand post text"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:969
+#: src/screens/VideoFeed/index.tsx:970
 msgid "Expands or collapses post text"
 msgstr ""
 
@@ -4069,8 +4069,8 @@ msgstr ""
 #: src/screens/Messages/Inbox.tsx:249
 #: src/screens/Profile/ProfileFeed/index.tsx:92
 #: src/screens/VideoFeed/components/Header.tsx:163
-#: src/screens/VideoFeed/index.tsx:1145
-#: src/screens/VideoFeed/index.tsx:1149
+#: src/screens/VideoFeed/index.tsx:1146
+#: src/screens/VideoFeed/index.tsx:1150
 #: src/view/com/auth/LoggedOut.tsx:72
 #: src/view/screens/NotFound.tsx:57
 #: src/view/screens/ProfileList.tsx:1038
@@ -6802,11 +6802,11 @@ msgstr ""
 msgid "Read blog post"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:970
+#: src/screens/VideoFeed/index.tsx:971
 msgid "Read less"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:970
+#: src/screens/VideoFeed/index.tsx:971
 msgid "Read more"
 msgstr ""
 
@@ -7392,7 +7392,7 @@ msgstr ""
 
 #: src/screens/Profile/ProfileFeed/index.tsx:93
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:569
-#: src/screens/VideoFeed/index.tsx:1146
+#: src/screens/VideoFeed/index.tsx:1147
 #: src/view/screens/NotFound.tsx:60
 #: src/view/screens/ProfileList.tsx:1039
 msgid "Returns to previous page"
@@ -8694,7 +8694,7 @@ msgstr ""
 msgid "That's all, folks!"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:1118
+#: src/screens/VideoFeed/index.tsx:1119
 msgid "That's everything!"
 msgstr ""
 
@@ -9827,11 +9827,11 @@ msgstr ""
 msgid "Video Games"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:1076
+#: src/screens/VideoFeed/index.tsx:1077
 msgid "Video is paused"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:1076
+#: src/screens/VideoFeed/index.tsx:1077
 msgid "Video is playing"
 msgstr ""
 
@@ -10739,7 +10739,7 @@ msgstr ""
 msgid "You've reached your daily limit for video uploads (too many videos)"
 msgstr ""
 
-#: src/screens/VideoFeed/index.tsx:1127
+#: src/screens/VideoFeed/index.tsx:1128
 msgid "You've run out of videos to watch. Maybe it's a good time to take a break?"
 msgstr ""
 
