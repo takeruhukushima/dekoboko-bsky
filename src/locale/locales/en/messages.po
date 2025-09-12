@@ -493,7 +493,7 @@ msgstr ""
 msgid "<0>{date}</0> at {time}"
 msgstr ""
 
-#: src/screens/Search/SearchResults.tsx:255
+#: src/screens/Search/SearchResults.tsx:277
 msgid "<0>Sign in</0><1> or </1><2>create an account</2><3> </3><4>to search for news, sports, politics, and everything else happening on Bluesky.</4>"
 msgstr ""
 
@@ -708,11 +708,11 @@ msgstr ""
 msgid "Add another account"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:811
+#: src/view/com/composer/Composer.tsx:980
 msgid "Add another post"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1444
+#: src/view/com/composer/Composer.tsx:1637
 msgid "Add another post to thread"
 msgstr ""
 
@@ -1220,11 +1220,11 @@ msgstr ""
 msgid "Are you sure you want to remove this from your feeds?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:760
+#: src/view/com/composer/Composer.tsx:929
 msgid "Are you sure you'd like to discard this draft?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:950
+#: src/view/com/composer/Composer.tsx:1119
 msgid "Are you sure you'd like to discard this post?"
 msgstr ""
 
@@ -1612,7 +1612,7 @@ msgstr ""
 #: src/screens/Deactivated.tsx:158
 #: src/screens/Profile/Header/EditProfileDialog.tsx:220
 #: src/screens/Profile/Header/EditProfileDialog.tsx:228
-#: src/screens/Search/Shell.tsx:349
+#: src/screens/Search/Shell.tsx:355
 #: src/screens/Settings/AppIconSettings/index.tsx:44
 #: src/screens/Settings/AppIconSettings/index.tsx:225
 #: src/screens/Settings/components/ChangeHandleDialog.tsx:78
@@ -1622,8 +1622,8 @@ msgstr ""
 #: src/screens/Settings/Settings.tsx:289
 #: src/screens/Takendown.tsx:99
 #: src/screens/Takendown.tsx:102
-#: src/view/com/composer/Composer.tsx:1005
-#: src/view/com/composer/Composer.tsx:1016
+#: src/view/com/composer/Composer.tsx:1174
+#: src/view/com/composer/Composer.tsx:1185
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:43
 #: src/view/com/composer/photos/EditImageDialog.web.tsx:52
 #: src/view/com/modals/CreateOrEditList.tsx:333
@@ -1656,7 +1656,7 @@ msgstr ""
 msgid "Cancel reactivation and sign out"
 msgstr ""
 
-#: src/screens/Search/Shell.tsx:341
+#: src/screens/Search/Shell.tsx:347
 msgid "Cancel search"
 msgstr ""
 
@@ -2010,7 +2010,7 @@ msgstr ""
 msgid "Closes password update alert"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1013
+#: src/view/com/composer/Composer.tsx:1182
 msgid "Closes post composer and discards post draft"
 msgstr ""
 
@@ -2069,16 +2069,12 @@ msgstr ""
 msgid "Compose new post"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:914
+#: src/view/com/composer/Composer.tsx:1083
 msgid "Compose posts up to {0, plural, other {# characters}} in length"
 msgstr ""
 
 #: src/screens/PostThread/components/ThreadComposePrompt.tsx:62
 msgid "Compose reply"
-msgstr ""
-
-#: src/view/com/composer/Composer.tsx:1834
-msgid "Compressing video..."
 msgstr ""
 
 #: src/components/moderation/LabelPreference.tsx:88
@@ -2457,7 +2453,7 @@ msgstr ""
 
 #: src/components/dialogs/Signin.tsx:86
 #: src/components/dialogs/Signin.tsx:88
-#: src/screens/Search/SearchResults.tsx:266
+#: src/screens/Search/SearchResults.tsx:288
 msgid "Create an account"
 msgstr ""
 
@@ -2635,7 +2631,7 @@ msgstr ""
 
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:685
 #: src/components/PostControls/PostMenu/PostMenuItems.tsx:687
-#: src/view/com/composer/Composer.tsx:924
+#: src/view/com/composer/Composer.tsx:1093
 msgid "Delete post"
 msgstr ""
 
@@ -2747,8 +2743,8 @@ msgid "Disabled"
 msgstr ""
 
 #: src/screens/Profile/Header/EditProfileDialog.tsx:83
-#: src/view/com/composer/Composer.tsx:762
-#: src/view/com/composer/Composer.tsx:957
+#: src/view/com/composer/Composer.tsx:931
+#: src/view/com/composer/Composer.tsx:1126
 msgid "Discard"
 msgstr ""
 
@@ -2756,11 +2752,11 @@ msgstr ""
 msgid "Discard changes?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:759
+#: src/view/com/composer/Composer.tsx:928
 msgid "Discard draft?"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:949
+#: src/view/com/composer/Composer.tsx:1118
 msgid "Discard post?"
 msgstr ""
 
@@ -2781,10 +2777,6 @@ msgstr ""
 
 #: src/components/Dialog/index.tsx:370
 msgid "Dismiss"
-msgstr ""
-
-#: src/view/com/composer/Composer.tsx:1758
-msgid "Dismiss error"
 msgstr ""
 
 #: src/components/ProgressGuide/List.tsx:42
@@ -3231,7 +3223,6 @@ msgstr ""
 msgid "Entertainment"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1843
 #: src/view/com/util/error/ErrorScreen.tsx:42
 msgid "Error"
 msgstr ""
@@ -3260,7 +3251,11 @@ msgstr ""
 msgid "Error:"
 msgstr ""
 
-#: src/screens/Search/SearchResults.tsx:144
+#: src/screens/Search/Shell.tsx:611
+msgid "Error: {0}"
+msgstr ""
+
+#: src/screens/Search/SearchResults.tsx:166
 msgid "Error: {error}"
 msgstr ""
 
@@ -3377,7 +3372,8 @@ msgid "Explicit sexual images."
 msgstr ""
 
 #: src/Navigation.tsx:759
-#: src/screens/Search/Shell.tsx:307
+#: src/screens/Search/Shell.tsx:313
+#: src/screens/Search/Shell.tsx:462
 #: src/view/shell/desktop/LeftNav.tsx:689
 #: src/view/shell/Drawer.tsx:414
 msgid "Explore"
@@ -3658,7 +3654,7 @@ msgid "Feedback sent to feed operator"
 msgstr ""
 
 #: src/Navigation.tsx:574
-#: src/screens/Search/SearchResults.tsx:73
+#: src/screens/Search/SearchResults.tsx:95
 #: src/screens/StarterPack/StarterPackScreen.tsx:190
 #: src/view/screens/Feeds.tsx:511
 #: src/view/screens/Profile.tsx:230
@@ -3731,7 +3727,7 @@ msgstr ""
 msgid "Find people to follow"
 msgstr ""
 
-#: src/screens/Search/Shell.tsx:476
+#: src/screens/Search/Shell.tsx:506
 msgid "Find posts, users, and feeds on Bluesky"
 msgstr ""
 
@@ -4224,6 +4220,11 @@ msgstr ""
 msgid "Help people know you're not a bot by uploading a picture or creating an avatar."
 msgstr ""
 
+#: src/screens/Search/SearchResults.tsx:78
+#: src/screens/Search/Shell.tsx:462
+msgid "Helps"
+msgstr ""
+
 #: src/screens/Settings/components/AddAppPasswordDialog.tsx:187
 msgid "Here is your app password!"
 msgstr ""
@@ -4619,10 +4620,6 @@ msgstr ""
 
 #: src/screens/StarterPack/Wizard/index.tsx:486
 msgid "It's just you right now! Add more people to your starter pack by searching above."
-msgstr ""
-
-#: src/view/com/composer/Composer.tsx:1777
-msgid "Job ID: {0}"
 msgstr ""
 
 #. Link to a page with job openings at Bluesky
@@ -5629,6 +5626,10 @@ msgstr ""
 msgid "No feeds found. Try searching for something else."
 msgstr ""
 
+#: src/screens/Search/Shell.tsx:636
+msgid "No help posts found"
+msgstr ""
+
 #: src/components/live/LinkPreview.tsx:63
 msgid "No image"
 msgstr ""
@@ -5683,6 +5684,10 @@ msgstr ""
 msgid "No reposts yet"
 msgstr ""
 
+#: src/screens/Search/Shell.tsx:635
+msgid "No request posts found"
+msgstr ""
+
 #: src/view/com/composer/text-input/mobile/Autocomplete.tsx:61
 #: src/view/com/composer/text-input/web/Autocomplete.tsx:192
 msgid "No result"
@@ -5705,9 +5710,9 @@ msgstr ""
 msgid "No results found for \"{query}\""
 msgstr ""
 
-#: src/screens/Search/SearchResults.tsx:311
-#: src/screens/Search/SearchResults.tsx:347
-#: src/screens/Search/SearchResults.tsx:392
+#: src/screens/Search/SearchResults.tsx:333
+#: src/screens/Search/SearchResults.tsx:369
+#: src/screens/Search/SearchResults.tsx:414
 msgid "No results found for {query}"
 msgstr ""
 
@@ -5888,11 +5893,11 @@ msgstr ""
 msgid "Onboarding reset"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:359
+#: src/view/com/composer/Composer.tsx:376
 msgid "One or more GIFs is missing alt text."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:356
+#: src/view/com/composer/Composer.tsx:373
 msgid "One or more images is missing alt text."
 msgstr ""
 
@@ -5904,7 +5909,7 @@ msgstr ""
 msgid "One or more of your selected files are too large. Maximum size is 100 MB."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:366
+#: src/view/com/composer/Composer.tsx:383
 msgid "One or more videos is missing alt text."
 msgstr ""
 
@@ -5961,7 +5966,7 @@ msgid "Open drawer menu"
 msgstr ""
 
 #: src/screens/Messages/components/MessageInput.web.tsx:181
-#: src/view/com/composer/Composer.tsx:1429
+#: src/view/com/composer/Composer.tsx:1622
 msgid "Open emoji picker"
 msgstr ""
 
@@ -6061,7 +6066,7 @@ msgstr ""
 msgid "Opens device gallery to select up to {MAX_IMAGES, plural, other {# images}}, or a single video or GIF."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1430
+#: src/view/com/composer/Composer.tsx:1623
 msgid "Opens emoji picker"
 msgstr ""
 
@@ -6211,7 +6216,7 @@ msgstr ""
 msgid "Pause video"
 msgstr ""
 
-#: src/screens/Search/SearchResults.tsx:67
+#: src/screens/Search/SearchResults.tsx:89
 #: src/screens/StarterPack/StarterPackScreen.tsx:189
 #: src/view/screens/ProfileList.tsx:170
 msgid "People"
@@ -6480,12 +6485,12 @@ msgctxt "description"
 msgid "Post"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1076
+#: src/view/com/composer/Composer.tsx:1245
 msgctxt "action"
 msgid "Post"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1074
+#: src/view/com/composer/Composer.tsx:1243
 msgctxt "action"
 msgid "Post All"
 msgstr ""
@@ -6649,10 +6654,6 @@ msgstr ""
 msgid "Privacy Policy"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1840
-msgid "Processing video..."
-msgstr ""
-
 #: src/lib/api/index.ts:60
 #: src/screens/Login/ForgotPasswordForm.tsx:149
 msgid "Processing..."
@@ -6688,22 +6689,22 @@ msgid "Public, sharable lists which can be used to drive feeds."
 msgstr ""
 
 #. Accessibility label for button to publish a single post
-#: src/view/com/composer/Composer.tsx:1056
+#: src/view/com/composer/Composer.tsx:1225
 msgid "Publish post"
 msgstr ""
 
 #. Accessibility label for button to publish multiple posts in a thread
-#: src/view/com/composer/Composer.tsx:1049
+#: src/view/com/composer/Composer.tsx:1218
 msgid "Publish posts"
 msgstr ""
 
 #. Accessibility label for button to publish multiple replies in a thread
-#: src/view/com/composer/Composer.tsx:1034
+#: src/view/com/composer/Composer.tsx:1203
 msgid "Publish replies"
 msgstr ""
 
 #. Accessibility label for button to publish a single reply
-#: src/view/com/composer/Composer.tsx:1041
+#: src/view/com/composer/Composer.tsx:1210
 msgid "Publish reply"
 msgstr ""
 
@@ -7092,7 +7093,7 @@ msgstr ""
 msgid "Replies to this post are disabled."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1072
+#: src/view/com/composer/Composer.tsx:1241
 msgctxt "action"
 msgid "Reply"
 msgstr ""
@@ -7289,6 +7290,11 @@ msgstr ""
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:224
 #: src/screens/Settings/components/ChangePasswordDialog.tsx:230
 msgid "Request code"
+msgstr ""
+
+#: src/screens/Search/SearchResults.tsx:67
+#: src/screens/Search/Shell.tsx:462
+msgid "Requests"
 msgstr ""
 
 #: src/screens/Settings/AccessibilitySettings.tsx:58
@@ -7517,8 +7523,8 @@ msgstr ""
 #: src/components/dialogs/SearchablePeopleList.tsx:514
 #: src/components/forms/SearchInput.tsx:34
 #: src/components/forms/SearchInput.tsx:36
-#: src/screens/Search/Shell.tsx:307
-#: src/screens/Search/Shell.tsx:464
+#: src/screens/Search/Shell.tsx:313
+#: src/screens/Search/Shell.tsx:494
 #: src/view/shell/bottom-bar/BottomBar.tsx:198
 msgid "Search"
 msgstr ""
@@ -7566,7 +7572,7 @@ msgstr ""
 msgid "Search for more feeds"
 msgstr ""
 
-#: src/screens/Search/Shell.tsx:334
+#: src/screens/Search/Shell.tsx:340
 msgid "Search for posts, users, or feeds"
 msgstr ""
 
@@ -7574,7 +7580,7 @@ msgstr ""
 msgid "Search GIFs"
 msgstr ""
 
-#: src/screens/Search/SearchResults.tsx:253
+#: src/screens/Search/SearchResults.tsx:275
 msgid "Search is currently unavailable when logged out"
 msgstr ""
 
@@ -8148,7 +8154,7 @@ msgstr ""
 #: src/screens/Login/index.tsx:122
 #: src/screens/Login/index.tsx:143
 #: src/screens/Login/LoginForm.tsx:181
-#: src/screens/Search/SearchResults.tsx:258
+#: src/screens/Search/SearchResults.tsx:280
 #: src/view/com/auth/SplashScreen.tsx:61
 #: src/view/com/auth/SplashScreen.tsx:69
 #: src/view/com/auth/SplashScreen.web.tsx:123
@@ -9078,7 +9084,7 @@ msgstr ""
 msgid "This post will be hidden from feeds and threads. This cannot be undone."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:475
+#: src/view/com/composer/Composer.tsx:682
 msgid "This post's author has disabled quote posts."
 msgstr ""
 
@@ -9495,7 +9501,7 @@ msgstr ""
 msgid "Unsubscribed from list"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:852
+#: src/view/com/composer/Composer.tsx:1021
 msgid "Unsupported video type: {mimeType}"
 msgstr ""
 
@@ -9572,6 +9578,10 @@ msgstr ""
 msgid "Upload from Library"
 msgstr ""
 
+#: src/view/com/composer/Composer.tsx:1472
+msgid "Uploading"
+msgstr ""
+
 #: src/lib/api/index.ts:302
 msgid "Uploading images..."
 msgstr ""
@@ -9579,10 +9589,6 @@ msgstr ""
 #: src/lib/api/index.ts:368
 #: src/lib/api/index.ts:392
 msgid "Uploading link thumbnail..."
-msgstr ""
-
-#: src/view/com/composer/Composer.tsx:1837
-msgid "Uploading video..."
 msgstr ""
 
 #: src/screens/Settings/AppPasswords.tsx:67
@@ -9843,10 +9849,6 @@ msgstr ""
 msgid "Video settings"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:1847
-msgid "Video uploaded"
-msgstr ""
-
 #: src/components/Post/Embed/VideoEmbed/VideoEmbedInner/VideoEmbedInnerNative.tsx:81
 msgid "Video: {0}"
 msgstr ""
@@ -9859,7 +9861,7 @@ msgstr ""
 msgid "Videos must be less than 3 minutes long."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:546
+#: src/view/com/composer/Composer.tsx:752
 msgctxt "Action to view the post the user just created"
 msgid "View"
 msgstr ""
@@ -9921,7 +9923,7 @@ msgstr ""
 msgid "View more trending videos"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:541
+#: src/view/com/composer/Composer.tsx:747
 msgid "View post"
 msgstr ""
 
@@ -10145,11 +10147,11 @@ msgstr ""
 msgid "We're sorry, but we weren't able to load your muted words at this time. Please try again."
 msgstr ""
 
-#: src/screens/Search/SearchResults.tsx:285
+#: src/screens/Search/SearchResults.tsx:307
 msgid "We're sorry, but your search could not be completed. Please try again in a few minutes."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:472
+#: src/view/com/composer/Composer.tsx:679
 msgid "We're sorry! The post you are replying to has been deleted."
 msgstr ""
 
@@ -10200,7 +10202,7 @@ msgstr ""
 
 #: src/view/com/auth/SplashScreen.tsx:38
 #: src/view/com/auth/SplashScreen.web.tsx:99
-#: src/view/com/composer/Composer.tsx:812
+#: src/view/com/composer/Composer.tsx:981
 msgid "What's up?"
 msgstr ""
 
@@ -10278,12 +10280,12 @@ msgstr ""
 msgid "Write a message"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:912
+#: src/view/com/composer/Composer.tsx:1081
 msgid "Write post"
 msgstr ""
 
 #: src/screens/PostThread/components/ThreadComposePrompt.tsx:90
-#: src/view/com/composer/Composer.tsx:810
+#: src/view/com/composer/Composer.tsx:979
 msgid "Write your reply"
 msgstr ""
 
@@ -10861,11 +10863,11 @@ msgstr ""
 msgid "Your password must be at least 8 characters long."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:537
+#: src/view/com/composer/Composer.tsx:743
 msgid "Your post was sent"
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:534
+#: src/view/com/composer/Composer.tsx:740
 msgid "Your posts were sent"
 msgstr ""
 
@@ -10889,7 +10891,7 @@ msgstr ""
 msgid "Your profile, posts, feeds, and lists will no longer be visible to other Bluesky users. You can reactivate your account at any time by logging in."
 msgstr ""
 
-#: src/view/com/composer/Composer.tsx:536
+#: src/view/com/composer/Composer.tsx:742
 msgid "Your reply was sent"
 msgstr ""
 
